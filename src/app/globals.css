@@ -2,6 +2,7 @@
 @tailwind components;
 @tailwind utilities;
 
+
 :root {
   --foreground-rgb: 0, 0, 0;
   --background-start-rgb: 214, 219, 220;
@@ -30,4 +31,29 @@ body {
   .text-balance {
     text-wrap: balance;
   }
+}
+
+/* Adjusting heading sizes */
+h1 {
+  @apply text-4xl font-bold; /* Example sizes, adjust as needed */
+}
+
+h2 {
+  @apply text-3xl font-bold; /* Example sizes, adjust as needed */
+}
+
+h3 {
+  @apply text-2xl font-bold; /* Example sizes, adjust as needed */
+}
+
+h4 {
+  @apply text-xl font-bold; /* Example sizes, adjust as needed */
+}
+
+h5 {
+  @apply text-lg font-bold; /* Example sizes, adjust as needed */
+}
+
+h6 {
+  @apply text-base font-bold; /* Example sizes, adjust as needed */
 }
