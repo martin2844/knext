@@ -80,6 +80,31 @@ exports.down = function (knex) {
 
 These migrations are crucial for managing the user data associated with the GitHub auth provider via NextAuth.
 
+## Docker
+
+To run the application using Docker, follow these steps:
+
+1. Build the Docker image:
+
+   ```bash
+   docker build -t knext .
+   ```
+
+2. Run the container:
+   ```bash
+   docker run -p 3000:3000 knext
+   ```
+
+Alternatively, you can use Docker Compose for a more streamlined setup:
+
+1. Ensure you have Docker Compose installed on your system.
+2. Run the following command in the project root:
+   ```bash
+   docker-compose up
+   ```
+
+This will build the image if it doesn't exist and start the container. The application will be accessible at http://localhost:3000.
+
 ## Contributing 🤝
 
 Contributions are what make the open-source community such an amazing place to learn, inspire, and create. Any contributions you make are **greatly appreciated**.
@@ -101,3 +126,9 @@ Distributed under the MIT License. See `LICENSE` for more information.
 - etc
 
 We hope you enjoy using Knext as much as we enjoyed creating it! 🚀
+
+## Resources
+
+- [Next Auth Docs](https://next-auth.js.org/getting-started/example)
+- [Knex Docs](https://knexjs.org/guide/)
+- [Tailwind CSS](https://tailwindcss.com/docs/installation)

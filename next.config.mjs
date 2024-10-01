@@ -4,6 +4,7 @@ const nextConfig = {
     instrumentationHook: true,
     serverComponentsExternalPackages: ["knex"],
   },
+  output: "standalone",
 };
 
 export default nextConfig;
