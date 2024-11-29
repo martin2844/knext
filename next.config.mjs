@@ -1,9 +1,6 @@
 /** @type {import('next').NextConfig} */
 const nextConfig = {
-  experimental: {
-    instrumentationHook: true,
-    serverComponentsExternalPackages: ["knex"],
-  },
+  serverExternalPackages: ["knex"],
   output: "standalone",
 };
 
