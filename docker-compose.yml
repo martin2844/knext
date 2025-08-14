@@ -4,9 +4,12 @@ services:
   knext:
     build: .
     ports:
-      - "3000:3000"
+      - "3050:3000"
     environment:
       - NODE_ENV=production
-      - HOSTNAME=0.0.0.0
+      - DATABASE_PATH=./data/db.sqlite
     volumes:
-      - ./db.sqlite:/app/db.sqlite
+      - knext_data:/app/data
+
+volumes:
+  knext_data:

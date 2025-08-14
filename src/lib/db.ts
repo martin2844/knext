@@ -3,7 +3,7 @@ import knex from "knex";
 const config = {
   client: "better-sqlite3",
   connection: {
-    filename: "./db.sqlite",
+    filename: process.env.DATABASE_PATH || "./db.sqlite",
   },
   useNullAsDefault: true,
   migrations: {
