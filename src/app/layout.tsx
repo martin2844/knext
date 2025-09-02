@@ -18,8 +18,7 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body
-        style={{ minHeight: "100vh" }}
-        className="flex flex-col w-full h-full items-center justify-center"
+        className="min-h-screen w-full"
       >
         {children}
       </body>

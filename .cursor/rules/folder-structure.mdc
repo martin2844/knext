@@ -1,0 +1,16 @@
+---
+description: 
+globs: 
+alwaysApply: true
+---
+---
+description: Nextjs folder structure - project org
+globs: 
+alwaysApply: true
+---
+
+Components should always be in Pascal Case. This applies both to the file name and the Component name.
+Server actions should be stored in @/actions and they should have a folder following the pattern of the pages / component structure. You have some examples already in place. Check them out
+page.tsx files should ideally have no JSX logic, they should ideally return just one component that should be imported from @/components/Pages
+page.tsx files should have all initial ssr logic
+We should avoid client components as much as possible, specially for loading data. If data is loaded it should be done SSR in the page.tsx file, and be drilled down as props to the appropiate components.

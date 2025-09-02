@@ -1,3 +1,4 @@
+![knext](./knext-app.png)
 # Knext 🚀
 
 Welcome to **Knext** - a Next.js starter template that incorporates NextAuth, styled using TailwindCSS, and utilizes SQLite with KNEX for efficient query building. Knext combines the powerful features of these technologies to streamline the setup of Next.js projects.

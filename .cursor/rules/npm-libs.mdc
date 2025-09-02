@@ -1,0 +1,11 @@
+---
+alwaysApply: false
+---
+---
+description: external dependencies 
+globs: 
+alwaysApply: true
+---
+If you need an external dependency, check if one of these is not already installed.
+For dates: dayjs
+General js utils: lodash

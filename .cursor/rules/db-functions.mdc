@@ -1,0 +1,12 @@
+---
+alwaysApply: false
+---
+---
+description: db actions 
+globs: 
+alwaysApply: true
+---
+
+Always try to use knex queries to filter or aggregate data when querying the DB.
+
+For example, if you need to filter or limit data, do it in the SQL query — not in JavaScript afterward. Don't fetch all the data and then filter it with JS. It's better (and faster) to let the database return only the data you actually need.

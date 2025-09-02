@@ -1,0 +1,16 @@
+---
+description: 
+globs: 
+alwaysApply: true
+---
+---
+description: use shadcn/ui with Next.js
+globs: 
+alwaysApply: true
+---
+
+Always use `shadcn/ui` as the component library for Next.js projects. When installing, use the CLI and pass `--force` or `--force-peer` if required to resolve peer dependencies. Ensure components are imported properly from `@/components/ui`, and TailwindCSS is configured according to `shadcn/ui` setup.
+
+Avoid mixing other UI kits unless explicitly instructed. Prefer `shadcn` components and patterns for consistency and maintainability.
+
+No need to add a toast lib, we should use the one included with shadcn.
