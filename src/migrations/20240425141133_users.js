@@ -3,7 +3,7 @@
  * @returns { Promise<void> }
  */
 exports.up = function (knex) {
-  knex.schema
+  return knex.schema
     .createTable("users", (table) => {
       table.string("id").primary();
       table.string("name").notNullable();
@@ -18,5 +18,5 @@ exports.up = function (knex) {
  * @returns { Promise<void> }
  */
 exports.down = function (knex) {
-  knex.schema.dropTable("users").then(() => console.log("Rollback done"));
+  return knex.schema.dropTable("users").then(() => console.log("Rollback done"));
 };

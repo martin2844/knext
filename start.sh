@@ -1,6 +1,6 @@
 #!/bin/sh
 
-echo "=== Starting HireLoop Application ==="
+echo "=== Starting Knext Application ==="
 echo "Database path: $DATABASE_PATH"
 
 # Ensure data directory exists

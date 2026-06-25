@@ -17,7 +17,10 @@ Follow these instructions to get your copy of the starter up and running on your
 
 ### Prerequisites
 
-Before you begin, ensure you have npm installed on your system. You can install it from [npmjs.com](https://www.npmjs.com/get-npm).
+- **Node.js**: `>=20.9.0` (required by Next.js 16 and better-sqlite3 12).
+- **npm**: installed on your system. You can install it from [npmjs.com](https://www.npmjs.com/get-npm).
+
+> **Note on dependencies**: this starter uses **NextAuth.js v5 beta** because it is the version built for the Next.js App Router. The latest stable v4 release does not integrate as cleanly with App Router and currently depends on a vulnerable `uuid` version, so v5 beta is intentionally used while it remains the best-supported option for this stack.
 
 ### Installation
 
@@ -41,6 +44,23 @@ Before you begin, ensure you have npm installed on your system. You can install 
    ```
 
 Now, your server should be running on [http://localhost:3000](http://localhost:3000). Open your browser and visit the address to see your starter in action!
+
+### Environment Variables
+
+Copy `.env.example` to `.env` and fill in the values:
+
+```sh
+AUTH_GITHUB_ID="your-github-app-id"
+AUTH_GITHUB_SECRET="your-github-app-secret"
+AUTH_SECRET="a-strong-random-secret"
+AUTH_URL=http://localhost:3000
+NEXT_PUBLIC_URL=http://localhost:3000
+```
+
+- `AUTH_GITHUB_ID` / `AUTH_GITHUB_SECRET` — GitHub OAuth app credentials.
+- `AUTH_SECRET` — a strong random string used by NextAuth.js to sign tokens.
+- `AUTH_URL` — the canonical URL of your app (used by NextAuth.js v5).
+- `NEXT_PUBLIC_URL` — public URL exposed to the browser.
 
 ## Database Migrations
 
@@ -78,6 +98,8 @@ exports.down = function (knex) {
     .then(() => console.log("Rollback done"));
 };
 ```
+
+A separate migration (`src/migrations/*_add_unique_email_to_users.js`) adds a unique index on `email` to prevent duplicate accounts from concurrent OAuth callbacks.
 
 These migrations are crucial for managing the user data associated with the GitHub auth provider via NextAuth.
 

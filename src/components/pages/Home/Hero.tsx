@@ -20,7 +20,7 @@ export default function Hero() {
                     </p>
                     <div className="mx-auto mt-8 flex max-w-3xl flex-wrap justify-center gap-4 text-sm text-slate-400">
                         <span className="rounded-full bg-slate-800/50 px-3 py-1 backdrop-blur">
-                            Next.js 15
+                            Next.js 16
                         </span>
                         <span className="rounded-full bg-slate-800/50 px-3 py-1 backdrop-blur">
                             TypeScript

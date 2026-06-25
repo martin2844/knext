@@ -1,3 +1,5 @@
+import "server-only";
+
 import knex from "knex";
 
 const config = {
