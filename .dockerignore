@@ -1,1 +1,12 @@
 .git
+.github
+.next
+node_modules
+coverage
+npm-debug.log*
+*.sqlite
+*.sqlite-journal
+*.sqlite-shm
+*.sqlite-wal
+.env*
+!.env.example

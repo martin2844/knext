@@ -1,5 +1,7 @@
 #!/bin/sh
 
+set -eu
+
 echo "=== Starting Knext Application ==="
 echo "Database path: $DATABASE_PATH"
 
@@ -7,14 +9,8 @@ echo "Database path: $DATABASE_PATH"
 mkdir -p /app/data
 
 echo "Running database migrations..."
-npm run migrate:latest
-
-if [ $? -eq 0 ]; then
-    echo "✅ Migrations completed successfully"
-else
-    echo "❌ Migrations failed"
-    exit 1
-fi
+node migrate.js
+echo "Migrations completed successfully"
 
 echo "Starting application..."
-exec node server.js 
+exec node server.js

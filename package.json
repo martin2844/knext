@@ -3,7 +3,7 @@
   "version": "0.1.0",
   "private": true,
   "engines": {
-    "node": ">=20.9.0"
+    "node": ">=22.0.0"
   },
   "scripts": {
     "dev": "next dev",
@@ -12,7 +12,10 @@
     "migrate:make": "knex migrate:make",
     "migrate:latest": "knex migrate:latest",
     "migrate:rollback": "knex migrate:rollback",
-    "lint": "eslint ."
+    "lint": "eslint .",
+    "test": "node --conditions=react-server --import tsx --test test/**/*.test.ts",
+    "check": "npm run lint && npm test && npm run build",
+    "audit:prod": "npm audit --omit=dev --audit-level=high"
   },
   "dependencies": {
     "@fontsource/roboto": "^5.2.10",
@@ -23,8 +26,8 @@
     "clsx": "^2.1.1",
     "knex": "^3.2.10",
     "lucide-react": "^1.21.0",
-    "next": "^16.2.9",
-    "next-auth": "^5.0.0-beta.31",
+    "next": "^16.3.3",
+    "next-auth": "^5.0.0-beta.32",
     "react": "^19.2.7",
     "react-dom": "^19.2.7",
     "server-only": "^0.0.1",
@@ -40,14 +43,15 @@
     "better-sqlite3": false
   },
   "devDependencies": {
-    "@types/node": "^20.19.43",
+    "@types/node": "^24.10.0",
     "@types/react": "^19.2.17",
     "@types/react-dom": "^19.2.3",
     "eslint": "^9.39.4",
-    "eslint-config-next": "^16.2.9",
+    "eslint-config-next": "^16.3.3",
     "@tailwindcss/postcss": "^4.3.1",
     "postcss": "^8.5.15",
     "tailwindcss": "^4.3.1",
+    "tsx": "^4.21.0",
     "typescript": "^5.9.3"
   }
 }

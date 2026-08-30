@@ -1,13 +1,13 @@
-version: '3.8'
-
 services:
   knext:
     build: .
     ports:
-      - "3050:3000"
+      - "3000:3000"
+    env_file:
+      - .env
     environment:
-      - NODE_ENV=production
-      - DATABASE_PATH=./data/db.sqlite
+      NODE_ENV: production
+      DATABASE_PATH: /app/data/db.sqlite
     volumes:
       - knext_data:/app/data
 

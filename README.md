@@ -17,7 +17,7 @@ Follow these instructions to get your copy of the starter up and running on your
 
 ### Prerequisites
 
-- **Node.js**: `>=20.9.0` (required by Next.js 16 and better-sqlite3 12).
+- **Node.js**: `>=22` (Node.js 24 is used by Docker and CI).
 - **npm**: installed on your system. You can install it from [npmjs.com](https://www.npmjs.com/get-npm).
 
 > **Note on dependencies**: this starter uses **NextAuth.js v5 beta** because it is the version built for the Next.js App Router. The latest stable v4 release does not integrate as cleanly with App Router and currently depends on a vulnerable `uuid` version, so v5 beta is intentionally used while it remains the best-supported option for this stack.
@@ -34,11 +34,23 @@ Follow these instructions to get your copy of the starter up and running on your
    ```bash
    cd knext
    ```
-3. Install dependencies:
+3. Install the exact dependency tree:
    ```bash
-   npm i
+   npm ci
    ```
-4. Start the development server:
+4. Create your local environment file:
+   ```bash
+   cp .env.example .env
+   ```
+   Add your GitHub OAuth credentials, then generate an auth secret with:
+   ```bash
+   openssl rand -base64 32
+   ```
+5. Create or update the local database:
+   ```bash
+   npm run migrate:latest
+   ```
+6. Start the development server:
    ```bash
    npm run dev
    ```
@@ -47,7 +59,7 @@ Now, your server should be running on [http://localhost:3000](http://localhost:3
 
 ### Environment Variables
 
-Copy `.env.example` to `.env` and fill in the values:
+Copy `.env.example` to `.env` and fill in the values before starting the app:
 
 ```sh
 AUTH_GITHUB_ID="your-github-app-id"
@@ -99,7 +111,7 @@ exports.down = function (knex) {
 };
 ```
 
-A separate migration (`src/migrations/*_add_unique_email_to_users.js`) adds a unique index on `email` to prevent duplicate accounts from concurrent OAuth callbacks.
+Later migrations deduplicate legacy emails, add a unique email index, and link each application user to a stable OAuth provider account.
 
 These migrations are crucial for managing the user data associated with the GitHub auth provider via NextAuth.
 
@@ -115,7 +127,9 @@ To run the application using Docker, follow these steps:
 
 2. Run the container:
    ```bash
-   docker run -p 3000:3000 knext
+   docker volume create knext_data
+   docker run --env-file .env -p 3000:3000 \
+     -v knext_data:/app/data knext
    ```
 
 Alternatively, you can use Docker Compose for a more streamlined setup:
@@ -123,10 +137,10 @@ Alternatively, you can use Docker Compose for a more streamlined setup:
 1. Ensure you have Docker Compose installed on your system.
 2. Run the following command in the project root:
    ```bash
-   docker-compose up
+   docker compose up --build
    ```
 
-This will build the image if it doesn't exist and start the container. The application will be accessible at http://localhost:3000.
+Compose reads the OAuth settings from `.env`, persists SQLite data in the `knext_data` volume, runs pending migrations, and serves the app at http://localhost:3000.
 
 ## Contributing 🤝
 
