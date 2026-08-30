@@ -8,54 +8,47 @@ export async function findOrCreateUser(
   user: OAuthUser,
   database: Knex = db
 ): Promise<PersistedUser> {
-  return database.transaction(async (trx) => {
-    const identity = {
-      provider: user.provider,
-      provider_account_id: user.providerAccountId,
-    };
-    const profile = {
-      name: user.name,
-      email: user.email,
-      image: user.image,
-    };
+  const identity = {
+    provider: user.provider,
+    provider_account_id: user.providerAccountId,
+  };
+  const profile = {
+    name: user.name,
+    email: user.email,
+    image: user.image,
+  };
 
-    const accountUser = await trx<PersistedUser>("users")
-      .where(identity)
-      .first();
+  const [accountUser] = await database<PersistedUser>("users")
+    .where(identity)
+    .update(profile)
+    .returning("*");
 
-    if (accountUser) {
-      await trx("users").where({ id: accountUser.id }).update(profile);
-      return { ...accountUser, ...profile };
-    }
+  if (accountUser) {
+    return accountUser;
+  }
 
-    // Link rows created by older versions once, without allowing one OAuth
-    // account to take over an email already linked to a different account.
-    const legacyUser = await trx<PersistedUser>("users")
-      .where({ email: user.email })
-      .whereNull("provider")
-      .whereNull("provider_account_id")
-      .first();
+  // Claim a legacy row atomically. The null identity guard prevents a
+  // different OAuth account from taking over an already-linked email.
+  const [legacyUser] = await database<PersistedUser>("users")
+    .where({ email: user.email })
+    .whereNull("provider")
+    .whereNull("provider_account_id")
+    .update({ ...profile, ...identity })
+    .returning("*");
 
-    if (legacyUser) {
-      await trx("users")
-        .where({ id: legacyUser.id })
-        .update({ ...profile, ...identity });
-      return { ...legacyUser, ...profile, ...identity };
-    }
+  if (legacyUser) {
+    return legacyUser;
+  }
 
-    await trx("users")
-      .insert({ id: user.id, ...profile, ...identity })
-      .onConflict(["provider", "provider_account_id"])
-      .merge(["name", "email", "image"]);
+  const [storedUser] = await database<PersistedUser>("users")
+    .insert({ id: user.id, ...profile, ...identity })
+    .onConflict(["provider", "provider_account_id"])
+    .merge(["name", "email", "image"])
+    .returning("*");
 
-    const storedUser = await trx<PersistedUser>("users")
-      .where(identity)
-      .first();
+  if (!storedUser) {
+    throw new Error("OAuth user could not be persisted");
+  }
 
-    if (!storedUser) {
-      throw new Error("OAuth user could not be persisted");
-    }
-
-    return storedUser;
-  });
+  return storedUser;
 }

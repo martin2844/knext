@@ -46,6 +46,7 @@ Follow these instructions to get your copy of the starter up and running on your
    ```bash
    openssl rand -base64 32
    ```
+   Paste the printed value into `AUTH_SECRET` in `.env`.
 5. Create or update the local database:
    ```bash
    npm run migrate:latest

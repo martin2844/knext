@@ -11,16 +11,22 @@ const migrationsDirectory = path.resolve("src/migrations");
 async function createDatabase(): Promise<{
   database: Knex;
   directory: string;
+  filename: string;
 }> {
   const directory = await mkdtemp(path.join(tmpdir(), "knext-test-"));
-  const database = knex({
+  const filename = path.join(directory, "db.sqlite");
+  const database = connectDatabase(filename);
+
+  return { database, directory, filename };
+}
+
+function connectDatabase(filename: string): Knex {
+  return knex({
     client: "better-sqlite3",
-    connection: { filename: path.join(directory, "db.sqlite") },
+    connection: { filename },
     useNullAsDefault: true,
     migrations: { directory: migrationsDirectory },
   });
-
-  return { database, directory };
 }
 
 async function disposeDatabase(database: Knex, directory: string) {
@@ -78,7 +84,7 @@ test("an OAuth account keeps the canonical application user id", async () => {
       {
         id: "transient-second",
         name: "Martin Updated",
-        email: "martin@example.com",
+        email: "martin.updated@example.com",
         image: "https://example.com/avatar.png",
         provider: "github",
         providerAccountId: "2844",
@@ -89,9 +95,89 @@ test("an OAuth account keeps the canonical application user id", async () => {
     assert.equal(first.id, "transient-first");
     assert.equal(second.id, first.id);
     assert.equal(second.name, "Martin Updated");
+    assert.equal(second.email, "martin.updated@example.com");
     const result = await database("users").count({ count: "*" }).first();
     assert.equal(Number(result?.count), 1);
   } finally {
+    await disposeDatabase(database, directory);
+  }
+});
+
+test("a different OAuth account cannot claim an email already linked", async () => {
+  const { database, directory } = await createDatabase();
+
+  try {
+    await database.migrate.latest();
+    await findOrCreateUser(
+      {
+        id: "first-user",
+        name: "First",
+        email: "claimed@example.com",
+        image: null,
+        provider: "github",
+        providerAccountId: "first-account",
+      },
+      database
+    );
+
+    await assert.rejects(
+      findOrCreateUser(
+        {
+          id: "second-user",
+          name: "Second",
+          email: "claimed@example.com",
+          image: null,
+          provider: "github",
+          providerAccountId: "second-account",
+        },
+        database
+      ),
+      /UNIQUE constraint failed/
+    );
+
+    const storedUser = await database("users").first();
+    assert.equal(storedUser.provider_account_id, "first-account");
+  } finally {
+    await disposeDatabase(database, directory);
+  }
+});
+
+test("concurrent callbacks share one OAuth identity across connections", async () => {
+  const { database, directory, filename } = await createDatabase();
+  const secondDatabase = connectDatabase(filename);
+
+  try {
+    await database.migrate.latest();
+    const users = await Promise.all([
+      findOrCreateUser(
+        {
+          id: "concurrent-first",
+          name: "Concurrent",
+          email: "concurrent@example.com",
+          image: null,
+          provider: "github",
+          providerAccountId: "concurrent-account",
+        },
+        database
+      ),
+      findOrCreateUser(
+        {
+          id: "concurrent-second",
+          name: "Concurrent",
+          email: "concurrent@example.com",
+          image: null,
+          provider: "github",
+          providerAccountId: "concurrent-account",
+        },
+        secondDatabase
+      ),
+    ]);
+
+    assert.equal(users[0].id, users[1].id);
+    const result = await database("users").count({ count: "*" }).first();
+    assert.equal(Number(result?.count), 1);
+  } finally {
+    await secondDatabase.destroy();
     await disposeDatabase(database, directory);
   }
 });

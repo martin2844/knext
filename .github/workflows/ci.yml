@@ -12,8 +12,8 @@ jobs:
   verify:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
-      - uses: actions/setup-node@v4
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
+      - uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020 # v4
         with:
           node-version: 24
           cache: npm
@@ -21,4 +21,25 @@ jobs:
       - run: npm run lint
       - run: npm test
       - run: npm run build
-      - run: npm run audit:prod
+      - run: npm run audit:all
+      - run: docker build --tag knext:ci .
+      - name: Smoke test Docker image
+        run: |
+          docker run --detach --name knext-ci -p 3000:3000 \
+            -e AUTH_GITHUB_ID=ci-client \
+            -e AUTH_GITHUB_SECRET=ci-secret \
+            -e AUTH_SECRET=ci-only-secret-that-is-long-enough \
+            -e AUTH_URL=http://localhost:3000 \
+            -e NEXT_PUBLIC_URL=http://localhost:3000 \
+            knext:ci
+          for attempt in {1..30}; do
+            if curl --fail --silent http://localhost:3000/api/auth/providers; then
+              exit 0
+            fi
+            sleep 1
+          done
+          docker logs knext-ci
+          exit 1
+      - name: Clean up Docker smoke test
+        if: always()
+        run: docker rm --force knext-ci || true
